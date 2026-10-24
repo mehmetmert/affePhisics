@@ -1,3 +1,5 @@
+#demo https://mehmetmert.github.io/affePhisics
+
 # affePhysics (affeLab: Physics) — Kapsamlı 3B Kuantum Atom ve Etkileşimli Fizik Laboratuvarı
 
 **`affePhysics`**, `affeLab` (Kimya) platformunun kardeş projesi ve `scienceWiki` ekosisteminin fizik ayağı olarak geliştirilmiş; sıfır sunucu maliyetiyle (statik GitHub Pages üzerinde) çalışan, %100 Türkçe akademik terminolojiye sahip kapsamlı bir web fizik laboratuvarıdır.
