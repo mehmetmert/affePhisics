@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>affePhysics (affeLab: Physics) — 3B Kuantum Atom, Nükleer Fizik, Mekanik, Optik ve Modern Fizik Laboratuvarı</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- ========================================================================
+       1. 3B KUANTUM ATOM PRELOADER (YÜKLEME EKRANI)
+       ======================================================================== -->
+  <div id="physPreloader" role="status" aria-live="polite">
+    <div class="pl-grid-bg"></div>
+
+    <div class="pl-atom-stage" aria-hidden="true">
+      <div class="pl-cloud c-cyan"></div>
+      <div class="pl-cloud c-purple"></div>
+      <div class="pl-orbit o1"><span class="pl-electron"></span></div>
+      <div class="pl-orbit o2"><span class="pl-electron"></span></div>
+      <div class="pl-orbit o3"><span class="pl-electron"></span></div>
+      <div class="pl-nucleus">
+        <span class="pl-nucleon p1"></span>
+        <span class="pl-nucleon n1"></span>
+        <span class="pl-nucleon p2"></span>
+        <span class="pl-nucleon n2"></span>
+        <span class="pl-nucleon p3"></span>
+      </div>
+    </div>
+
+    <div class="pl-brand">
+      <div class="pl-mark">aP</div>
+      <span class="pl-title">affePhysics</span>
+    </div>
+    <p class="pl-sub">3B Kuantum Atom, Atom Altı Katmanlar, Klasik/Modern Fizik ve RK4 Simülasyon Laboratuvarı</p>
+
+    <div class="pl-progress-shell">
+      <div id="plBar" class="pl-progress-bar"></div>
+    </div>
+    <div class="pl-status-row">
+      <span id="plStepText">Kuantum Dalga Fonksiyonları (|ψ|²) ve Fizik Motoru Yükleniyor...</span>
+      <b id="plPctText">%15</b>
+    </div>
+
+    <div class="pl-fact" id="plFactBox">
+      <b>💡 Fizik Notu:</b> Vücudunuzdaki her bir protonun kütlesinin <b>%99’u</b> kuarkların durgun kütlesinden değil, kuarkları ışık hızına yakın bağlayan <b>QCD Gluon alan enerjisinden</b> (<i>m = E/c²</i>) gelir!
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('affephysics_theme');
+        if (saved === 'light') document.documentElement.dataset.theme = 'light';
+      } catch (_) {}
+
+      var facts = [
+        'Vücudunuzdaki her bir protonun kütlesinin <b>%99’u</b> kuarkların durgun kütlesinden değil, kuarkları bağlayan <b>QCD Gluon alan enerjisinden</b> (<i>m = E/c²</i>) gelir!',
+        'Güneş’in çekirdeğindeki protonlar Coulomb engeli aşamayacak kadar soğuktur; yıldızların parlaması tamamen <b>Kuantum Tünelleme</b> sayesinde gerçekleşir.',
+        'Çift yarık deneyinde elektronlar tek tek fırlatılsa bile her bir elektron kendi kendisiyle girişim yaparak <b>|ψ₁ + ψ₂|²</b> saçaklarını oluşturur.',
+        'Başlangıç açıları arasında yalnızca <b>Δθ = 0,001°</b> fark olan iki çift sarkaç, Lyapunov üstel ıraksaması nedeniyle saniyeler içinde tamamen farklı yörüngelere ayrılır.'
+      ];
+      var factEl = document.getElementById('plFactBox');
+      if (factEl) {
+        factEl.innerHTML = '<b>💡 Fizik Notu:</b> ' + facts[Math.floor(Math.random() * facts.length)];
+      }
+
+      var steps = [
+        { pct: 32, txt: 'Kuantum Dalga Fonksiyonları (|ψ|²) ve Küresel Harmonikler Yükleniyor...' },
+        { pct: 64, txt: '3B WebGL Kuantum Atom ve Kuark-Gluon Sahnesi Hazırlanıyor...' },
+        { pct: 88, txt: 'Runge-Kutta (RK4), Maxwell Alan ve TDSE Çözücüleri Başlatılıyor...' },
+        { pct: 100, txt: 'affePhysics Laboratuvarı Hazır!' }
+      ];
+      var bar = document.getElementById('plBar');
+      var stepTxt = document.getElementById('plStepText');
+      var pctTxt = document.getElementById('plPctText');
+      var idx = 0;
+
+      var timer = setInterval(function () {
+        if (idx < steps.length) {
+          if (bar) bar.style.width = steps[idx].pct + '%';
+          if (stepTxt) stepTxt.textContent = steps[idx].txt;
+          if (pctTxt) pctTxt.textContent = '%' + steps[idx].pct;
+          idx++;
+        } else {
+          clearInterval(timer);
+        }
+      }, 220);
+
+      function hidePreloader() {
+        var pl = document.getElementById('physPreloader');
+        if (!pl || pl.classList.contains('preloader-hide')) return;
+        if (bar) bar.style.width = '100%';
+        if (pctTxt) pctTxt.textContent = '%100';
+        setTimeout(function () {
+          pl.classList.add('preloader-hide');
+          setTimeout(function () {
+            if (pl && pl.parentNode) pl.parentNode.removeChild(pl);
+          }, 650);
+        }, 250);
+      }
+
+      window.addEventListener('load', function () {
+        setTimeout(hidePreloader, 700);
+      });
+      setTimeout(hidePreloader, 2200);
+    })();
+  </script>
+
+  <!-- ========================================================================
+       2. ÜST GEZİNME ÇUBUĞU (7 ANA FİZİK MODÜLÜ & AKADEMİK ÇEKMECE TETİKLEYİCİ)
+       ======================================================================== -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">aP</div>
+      <div>
+        <span class="brand-title">affePhysics</span>
+        <span class="brand-ver">affeLab: Physics · scienceWiki Ekosistemi</span>
+      </div>
+    </div>
+
+    <nav class="main-nav" aria-label="7 Ana Fizik Laboratuvar Modülü">
+      <button class="nav-tab active" data-mod="mod1">1. Kuantum Atom &amp; Nükleer <span class="nav-badge">Quantum-Atom 3B</span></button>
+      <button class="nav-tab" data-mod="mod2">2. Canlı Cam Lab <span class="nav-badge">4 Deney</span></button>
+      <button class="nav-tab" data-mod="mod3">3. Mekanik &amp; Kaos <span class="nav-badge">RK4</span></button>
+      <button class="nav-tab" data-mod="mod4">4. Elektromanyetizma <span class="nav-badge">Maxwell</span></button>
+      <button class="nav-tab" data-mod="mod5">5. Optik &amp; Çift Yarık <span class="nav-badge">Kuantum Girişim</span></button>
+      <button class="nav-tab" data-mod="mod6">6. Termodinamik &amp; Akışkan</button>
+      <button class="nav-tab" data-mod="mod7">7. Görelilik &amp; Tünelleme <span class="nav-badge">TDSE</span></button>
+    </nav>
+
+    <div class="top-actions">
+      <button id="quickDoubleSlitBtn" class="icon-btn" style="border-color:rgba(0,242,254,0.45);color:var(--cyan);font-weight:700;" title="Kuantum Çift Yarık, Hangi-Yol Dedektörü, Kuantum Silgi ve Stern-Gerlach Deneylerine Git">
+        🌊 Çift Yarık &amp; Kuantum Deneyleri
+      </button>
+      <button id="openTheoryDrawerBtn" class="icon-btn theory-trigger-btn" title="Bu deneyin Sezgisel Mantığını, Keşif Tarihini, Formüllerini ve Görevlerini Aç">
+        📚 Akademik Bilgi &amp; Teori
+      </button>
+      <button id="themeToggleBtn" class="icon-btn" title="Karanlık Laboratuvar / Aydınlık Akademik Tema">☀️ Aydınlık Tema</button>
+      <button id="fullscreenBtn" class="icon-btn" title="Tam Ekran Modu">⛶</button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       MODÜL 1: ATOM MODELLERİ EVRİMİ, 3B KUANTUM ORBİTALLERİ, NÜKLEER & KUARKLAR
+       ======================================================================== -->
+  <main id="mod1" class="module-section active">
+    <div class="subtab-bar">
+      <div class="subtab-group">
+        <button class="subtab-btn active" data-sub="1_1">⚛️ 1.1. 3B Kuantum Atom, Molekül, Reaksiyon &amp; Çekirdek Derin-Zoom</button>
+        <button class="subtab-btn" data-sub="1_2">🔬 1.2. Tarihsel Atom Modelleri &amp; Spektrometre</button>
+        <button class="subtab-btn" data-sub="1_3">☢️ 1.3. Nükleer Fizik, İzotop &amp; ²³⁵U Fisyon</button>
+        <button class="subtab-btn" data-sub="1_4">🟣 1.4. Standart Model &amp; Kuark-Gluon Sentezleyici</button>
+      </div>
+      <div class="subtab-meta">
+        <span>Referans: <code>nazat02/Quantum-Atom (simulator_dark + nucleus_explorer)</code> · <code>Falstad QM</code></span>
+      </div>
+    </div>
+
+    <!-- ALT SEKME 1.1: 3B KUANTUM ATOM, MOLEKÜL, İNŞA ET, REAKSİYON, YOK OLMA VE NÜKLEER DERİN ZOOM -->
+    <div id="mod1_sub_1_1" class="lab-grid">
+      <!-- Sol Kontrol Paneli (Quantum-Atom: ATOMS | MOLECULES | BUILD + Görünüm & Derin Zoom) -->
+      <aside class="hud-panel">
+        <!-- Quantum-Atom Sol Mod Seçici: ATOMLAR | MOLEKÜLLER | İNŞA ET -->
+        <div class="hud-section">
+          <div class="qa-mode-switch" role="tablist" aria-label="Quantum-Atom Mod Seçimi">
+            <button class="qa-mode-tab active" data-qa-left="elements">⚛️ ATOMLAR</button>
+            <button class="qa-mode-tab" data-qa-left="molecules">🧬 MOLEKÜLLER</button>
+            <button class="qa-mode-tab" data-qa-left="build">🛠️ İNŞA ET</button>
+          </div>
+
+          <!-- GÖRÜNÜM A: ATOMLAR (118 ELEMENT + ÇOKLU KABUK 1s..7p LEJANTI) -->
+          <div id="qaLeftElementsPane" style="display:flex;flex-direction:column;gap:7px;margin-top:4px;">
+            <div class="hud-title">
+              <span>118 Element Seçimi (← / → Ok Tuşları)</span>
+              <button id="openPtableModalBtn" class="icon-btn" style="padding:3px 8px;font-size:11px;">⊞ Periyodik Tablo</button>
+            </div>
+            <input id="qaElSearchInput" type="text" class="qa-input" placeholder="🔍 Element ara (ör. Karbon, Au, 79, Oganesson)..." autocomplete="off" />
+            <select id="atomElementSelect" class="phys-select"></select>
+
+            <div class="btn-grid" style="margin-top:2px;">
+              <button id="qaMultiShellBtn" class="mode-btn active" title="Quantum-Atom modu: Dolu tüm kabukları (1s, 2s, 2p, 3s, 3p, 3d...) aynı anda kendi renkleriyle çiz">🌈 Tüm Dolu Kabuklar</button>
+              <button id="qaSingleOrbitalBtn" class="mode-btn" title="Seçili tek bir (n, l, m_l) kuantum orbitalini ve düğüm yüzeylerini incele">🎯 Tekil Orbital (n,l,m)</button>
+            </div>
+
+            <div>
+              <div class="ctrl-label">
+                <span>Dolu Alt Kabuklar (Gizlemek/Açmak İçin Tıklayın)</span>
+                <button id="qaResetSubshellsBtn" style="font-size:10px;color:var(--cyan);">Tümünü Aç</button>
+              </div>
+              <div id="qaSubshellLegend" class="qa-oleg"></div>
+            </div>
+          </div>
+
+          <!-- GÖRÜNÜM B: MOLEKÜLLER (KUANTUM ORBİTAL ÖRTÜŞMESİ, VSEPR & İYONİK BAĞLAR) -->
+          <div id="qaLeftMoleculesPane" hidden style="display:flex;flex-direction:column;gap:7px;margin-top:4px;">
+            <div class="hud-title">
+              <span>3B Kuantum Moleküller &amp; İyonik Çiftler</span>
+              <b id="qaActiveMolBadge" style="color:var(--cyan);font-family:var(--mono);font-size:11px;">H₂O</b>
+            </div>
+            <input id="qaMolSearchInput" type="text" class="qa-input" placeholder="🔍 Molekül ara (H2O, CH4, NaCl, Benzen, SF6)..." autocomplete="off" />
+            <div id="qaMoleculeGrid" class="qa-mol-grid"></div>
+            <div id="qaMoleculeInfoBox" style="padding:7px 9px;border-radius:8px;background:rgba(0,242,254,0.07);border:1px solid rgba(0,242,254,0.22);font-size:11px;line-height:1.45;"></div>
+          </div>
+
+          <!-- GÖRÜNÜM C: İNŞA ET (ASTRA AI BUILD-AN-ATOM + QUANTUM-ATOM BİLEŞİK MOTORU) -->
+          <div id="qaLeftBuildPane" hidden style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+            <!-- BÖLÜM C1: ASTRA AI "BUILD AN ATOM" (PARÇACIK SEPETLERİYLE ATOM, İZOTOP & İYON İNŞA ET) -->
+            <div style="padding:8px;border-radius:9px;background:rgba(5,7,13,0.65);border:1px solid var(--border-hi);display:flex;flex-direction:column;gap:6px;">
+              <div class="hud-title">
+                <span style="color:var(--cyan);">⚛️ Astra Lab: Bir Atom İnşa Et (Build an Atom)</span>
+                <span id="baaIonBadge" style="font-size:10px;padding:2px 6px;border-radius:99px;background:rgba(16,185,129,0.2);color:#34d399;font-family:var(--mono);">Nötr (0)</span>
+              </div>
+
+              <!-- Proton, Nötron, Elektron +/- Sayaçları -->
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;text-align:center;">
+                <div style="padding:5px;border-radius:7px;background:rgba(255,51,102,0.12);border:1px solid rgba(255,51,102,0.35);">
+                  <div style="font-size:10px;color:#fda4af;font-weight:700;">Proton (p⁺)</div>
+                  <b id="baaProtonCount" style="font-size:15px;font-family:var(--mono);color:#ff3366;">6</b>
+                  <div style="display:flex;justify-content:center;gap:4px;margin-top:3px;">
+                    <button id="baaProtonMinus" class="qa-tool-btn" style="padding:2px 8px;">−</button>
+                    <button id="baaProtonPlus" class="qa-tool-btn" style="padding:2px 8px;">+</button>
+                  </div>
+                </div>
+                <div style="padding:5px;border-radius:7px;background:rgba(100,116,139,0.16);border:1px solid rgba(148,163,184,0.35);">
+                  <div style="font-size:10px;color:#cbd5e1;font-weight:700;">Nötron (n⁰)</div>
+                  <b id="baaNeutronCount" style="font-size:15px;font-family:var(--mono);color:#e2e8f0;">6</b>
+                  <div style="display:flex;justify-content:center;gap:4px;margin-top:3px;">
+                    <button id="baaNeutronMinus" class="qa-tool-btn" style="padding:2px 8px;">−</button>
+                    <button id="baaNeutronPlus" class="qa-tool-btn" style="padding:2px 8px;">+</button>
+                  </div>
+                </div>
+                <div style="padding:5px;border-radius:7px;background:rgba(0,242,254,0.12);border:1px solid rgba(0,242,254,0.35);">
+                  <div style="font-size:10px;color:#67e8f9;font-weight:700;">Elektron (e⁻)</div>
+                  <b id="baaElectronCount" style="font-size:15px;font-family:var(--mono);color:#00f2fe;">6</b>
+                  <div style="display:flex;justify-content:center;gap:4px;margin-top:3px;">
+                    <button id="baaElectronMinus" class="qa-tool-btn" style="padding:2px 8px;">−</button>
+                    <button id="baaElectronPlus" class="qa-tool-btn" style="padding:2px 8px;">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Kütle Numarası, Net Yük ve Çekirdek Kararlılık Bandı -->
+              <div id="baaStabilityBar" style="padding:5px 8px;border-radius:6px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.4);font-size:10.5px;font-family:var(--mono);color:#34d399;text-align:center;">
+                ✅ Kararlı Çekirdek (A = 12, Net Yük q = 0)
+              </div>
+
+              <!-- Astra AI Görev / Meydan Okuma (Challenge) Kutusu -->
+              <div style="padding:6px 8px;border-radius:7px;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.35);font-size:11px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+                  <b style="color:#c084fc;font-size:10.5px;" id="baaChallengeTitle">🎯 GÖREV 1/6</b>
+                  <div style="display:flex;gap:4px;">
+                    <button id="baaChallengeCheckBtn" class="qa-tool-btn emerald" style="padding:2px 7px;font-size:10px;">✓ Kontrol Et</button>
+                    <button id="baaChallengeNextBtn" class="qa-tool-btn" style="padding:2px 7px;font-size:10px;">Sonraki ▶</button>
+                  </div>
+                </div>
+                <div id="baaChallengePrompt" style="color:var(--text);font-size:11px;line-height:1.35;">Kütle numarası 14 olan nötr Karbon-14 (¹⁴C) izotopunu inşa edin.</div>
+                <div id="baaChallengeFeedback" style="font-size:10.5px;font-family:var(--mono);margin-top:3px;color:#fbbf24;"></div>
+              </div>
+            </div>
+
+            <!-- BÖLÜM C2: QUANTUM-ATOM FORMÜL YAZ & 3B MOLEKÜL İNŞA ET -->
+            <div class="hud-title" style="margin-top:2px;">
+              <span>🧪 Formül Yaz &amp; 3B Molekül İnşa Et</span>
+            </div>
+            <div class="qa-build-bar">
+              <input id="qaBuildInput" type="text" class="qa-input" placeholder="Ör: H2O, CH4, CO2, C6H6, NaCl, SF6, XeF4, Au..." value="H2O" maxlength="32" />
+              <button id="qaBuildGoBtn" class="action-btn" style="width:auto;padding:7px 12px;">İnşa Et</button>
+            </div>
+            <div id="qaBuildStatus" style="font-size:11px;color:var(--emerald);font-family:var(--mono);"></div>
+            <div class="ctrl-label"><span>Hızlı Örnekler (Tıklayın):</span></div>
+            <div id="qaBuildExamples" class="qa-chip-wrap"></div>
+          </div>
+        </div>
+
+        <!-- 2. Tekil Orbital Kuantum Sayıları (n, l, m_l) -->
+        <div class="hud-section">
+          <div class="hud-title">
+            <span>2. Kuantum Sayıları (n, l, m_l)</span>
+            <b id="activeOrbitalBadge" style="color:#f59e0b;font-family:var(--mono);">2p_z</b>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Baş Kuantum Sayısı (n)</span><b id="qnNVal">n = 2</b></div>
+            <input id="qnN" type="range" min="1" max="7" step="1" value="2" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Açısal Momentum (l) &amp; Manyetik (m_l)</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+              <select id="qnL" class="phys-select"></select>
+              <select id="qnMl" class="phys-select"></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Quantum-Atom Görünüm & Dalga Fonksiyonu Modları -->
+        <div class="hud-section">
+          <div class="hud-title"><span>3. Quantum-Atom Render &amp; Dalga Modu</span></div>
+          <div class="btn-grid">
+            <button class="mode-btn active" data-atom-view="real">✨ Real Image (GLSL |ψ|²)</button>
+            <button class="mode-btn" data-atom-view="cloud">Monte Carlo Bulutu</button>
+            <button class="mode-btn" data-atom-view="glass">Canlı Cam (Ultra Mode)</button>
+            <button class="mode-btn" data-atom-view="diffuse">Diffuse (Yumuşak Bulut)</button>
+            <button class="mode-btn" data-atom-view="spherical">Küre-Lob (Spherical)</button>
+            <button class="mode-btn" data-atom-view="slice">Eksenel Kesit (Slice)</button>
+            <button class="mode-btn" data-atom-view="bohr">Klasik Yörünge (Bohr)</button>
+            <button class="mode-btn" data-atom-view="bohr_vs_qm">⚖️ Bohr vs Kuantum</button>
+          </div>
+          <button class="mode-btn" data-atom-view="rabi" style="width:100%;">🌊 Rabi Dipol Salınımı (Süperpozisyon)</button>
+
+          <div class="btn-grid" style="margin-top:3px;">
+            <button id="qaGridToggleBtn" class="mode-btn active">🌐 3B Kartezyen Izgara</button>
+            <button id="qaColorblindBtn" class="mode-btn" title="Deuteranopia (kırmızı-yeşil renk körlüğü) için optimize edilmiş 23-orbital paleti">🎨 Renk Körlüğü Paleti</button>
+          </div>
+
+          <!-- Uyarılmış Durum (Excited State) & Foton Emisyonu -->
+          <div style="display:flex;gap:5px;margin-top:2px;">
+            <button id="qaExcitedBtn" class="mode-btn" style="flex:1;border-color:rgba(245,158,11,0.45);color:#fbbf24;">
+              ⚡ Uyarılmış Durum (Excited)
+            </button>
+            <button id="qaRelaxPhotonBtn" class="mode-btn" hidden style="flex:1;border-color:rgba(16,185,129,0.55);color:#34d399;">
+              💫 Foton Sal (hν)
+            </button>
+          </div>
+          <div id="qaExcitedInfo" hidden style="font-size:10.5px;font-family:var(--mono);color:#fbbf24;padding:4px 7px;background:rgba(245,158,11,0.1);border-radius:6px;"></div>
+        </div>
+
+        <!-- 4. Nucleus Explorer: 3 Kademeli Sürekli Derinlik Zoom (Atom -> Pion Ağı -> Kuark/Gluon) -->
+        <div class="hud-section">
+          <div class="hud-title">
+            <span>4. Nucleus Explorer: Sürekli Derin Zoom</span>
+            <b id="qaZoomBandBadge" style="color:var(--cyan);font-family:var(--mono);font-size:10.5px;">ATOM (10⁻¹⁰ m)</b>
+          </div>
+          <div class="btn-grid cols-3">
+            <button class="mode-btn active" data-zoom-stage="1">1. Atom<br><small>10⁻¹⁰ m</small></button>
+            <button class="mode-btn" data-zoom-stage="2">2. Çekirdek·Pion<br><small>10⁻¹⁵ m</small></button>
+            <button class="mode-btn" data-zoom-stage="3">3. Kuark·Gluon<br><small>&lt;10⁻¹⁵ m</small></button>
+          </div>
+          <div class="ctrl-row" style="margin-top:3px;">
+            <div class="ctrl-label"><span>Sürekli Ölçek Kaydırıcı (Macro → Pion → Kuark)</span><b id="qaDeepZoomVal">%0</b></div>
+            <input id="qaDeepZoomSlider" type="range" min="0" max="1000" step="5" value="0" />
+          </div>
+          <div class="btn-grid" style="margin-top:2px;">
+            <button id="qaTogglePionsBtn" class="mode-btn active" title="Yukawa sanal pion (π) değişim bulutu ve nükleon bağ ağını göster/gizle">🟢 π Yukawa Pion Ağı</button>
+            <button id="qaToggleGluonsBtn" class="mode-btn active" title="Nükleon içi uud/udd kuark üçlülerini ve dalgalanan QCD gluon akı tüplerini göster/gizle">🟣 ◈ Kuark &amp; Gluon Tüpleri</button>
+          </div>
+        </div>
+
+        <button id="toggleAntimatterBtn" class="mode-btn antimatter-btn" style="padding:9px;font-weight:700;">
+          🌌 Antimadde (Antiatom) Moduna Geç
+        </button>
+      </aside>
+
+      <!-- Merkez 3B WebGL Kuantum Atom, Molekül, Reaksiyon ve Yok Olma Sahnesi -->
+      <section class="stage-panel">
+        <!-- Quantum-Atom Üst Hızlı Araç Çubuğu -->
+        <div class="qa-toolbar">
+          <button id="qaAnnihilateBtn" class="qa-tool-btn danger" title="Madde + Antimadde Yok Olma koreografisi: Seçili atom kendi antiatomuyla çarpışır (e⁻+e⁺ → 2γ ve çekirdek → π + γ)">
+            💥 Yok Olma (Madde + Antimadde)
+          </button>
+          <button id="qaReactionBtn" class="qa-tool-btn emerald" title="Canlı 3B Kimyasal Reaksiyon: Bağların kopuşunu ve yeni kuantum orbitallerin oluşumunu izle">
+            🧪 3B Reaksiyon İzle
+          </button>
+          <select id="qaReactionSelect" class="phys-select" style="width:auto;padding:4px 7px;font-size:11px;" title="İzlenecek 3B Kimyasal Reaksiyonu Seçin">
+            <option value="water">2H₂ + O₂ → 2H₂O (Su Sentezi)</option>
+            <option value="methane">CH₄ + 2O₂ → CO₂ + 2H₂O (Metan Yanması)</option>
+            <option value="ammonia">N₂ + 3H₂ → 2NH₃ (Haber-Bosch Amonyak)</option>
+            <option value="nacl">Na + Cl → Na⁺Cl⁻ (İyonik Elektron Transferi)</option>
+          </select>
+          <button id="qaBohrVsQuantumBtn" class="qa-tool-btn" title="1913 Bohr Gezegen Modeli ile 1926 Schrödinger 3B Dalga Bulutunu yan yana karşılaştır">
+            ⚖️ Bohr vs Kuantum
+          </button>
+          <button id="qaCompareBtn" class="qa-tool-btn" title="İki elementi yan yana 3B ve tablo olarak karşılaştır">
+            🆚 Element Karşılaştır
+          </button>
+          <button id="qaAnalysisBtn" class="qa-tool-btn" title="Molekül ve Bağ Analizi: Bağ uzunlukları (pm), VSEPR açıları, Pauling ΔEN iyonik karakter ve oktet kontrolü">
+            📐 Bağ Analizi
+          </button>
+          <button id="qaLessonsBtn" class="qa-tool-btn" title="Quantum-Atom Adım Adım Rehberli Etkileşimli Dersler">
+            🎓 Rehberli Dersler
+          </button>
+          <button id="qaSurpriseBtn" class="qa-tool-btn" title="Rastgele bir element veya molekül keşfet">
+            🎲 Rastgele
+          </button>
+          <button id="qaRecentsBtn" class="qa-tool-btn" title="Son incelenen element ve moleküller">
+            🕘 Geçmiş
+          </button>
+        </div>
+
+        <div class="stage-overlay-top" style="top:48px;">
+          <div class="hud-badge-group">
+            <span class="hud-pill"><i class="dot dot-p"></i>Proton: <b id="hudZ">6</b></span>
+            <span class="hud-pill"><i class="dot dot-n"></i>Nötron: <b id="hudN">6</b></span>
+            <span class="hud-pill"><i class="dot dot-e"></i>Elektron: <b id="hudE">6</b></span>
+            <span class="hud-pill"><i class="dot dot-q"></i>Aktif Yapı: <b id="hudOrbital">1s² 2s² 2p²</b></span>
+          </div>
+        </div>
+
+        <div id="atom3DStage" class="stage-canvas-wrap" title="Döndürmek için sürükleyin, yakınlaştırmak için kaydırın (Sol/Sağ ok tuşları: Element değiştir)"></div>
+
+        <!-- Rehberli Ders / Reaksiyon / Yok Olma Canlı Bilgi Bandı -->
+        <div id="qaStageBanner" class="qa-lesson-banner" hidden>
+          <div style="flex:1;">
+            <div style="font-size:10.5px;font-family:var(--mono);color:var(--cyan);" id="qaBannerTitle">REHBERLİ DERS</div>
+            <div style="font-size:12.5px;font-weight:600;color:var(--text);margin-top:2px;" id="qaBannerText">Adım açıklaması</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <button id="qaBannerPrevBtn" class="qa-tool-btn">◀ Önceki</button>
+            <button id="qaBannerNextBtn" class="qa-tool-btn">Sonraki ▶</button>
+            <button id="qaBannerCloseBtn" class="qa-tool-btn danger">✕ Kapat</button>
+          </div>
+        </div>
+
+        <div class="stage-overlay-bottom">
+          <div class="hud-badge-group">
+            <span class="hud-pill"><i class="dot dot-e"></i>+ψ / Elektron Bulutu</span>
+            <span class="hud-pill"><i class="dot dot-q"></i>−ψ / Karşı Faz</span>
+            <span class="hud-pill"><i class="dot" style="background:#39ff8f;box-shadow:0 0 8px #39ff8f;"></i>π Sanal Pion (Yukawa)</span>
+            <span class="hud-pill"><i class="dot dot-ph"></i>uud / udd Kuark &amp; Gluon</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sağ Telemetri, Radyal Dağılım ve Hund Kutucukları Paneli -->
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="nuclide-header">
+            <div class="nuclide-box">
+              <div id="atomNuclideNums" class="nuclide-nums"><span>12</span><span>6</span></div>
+              <span id="atomNuclideSym" class="nuclide-sym">C</span>
+            </div>
+            <div>
+              <h3 id="atomElTitle" style="font-size:15px;font-weight:800;">Karbon (C)</h3>
+              <p id="atomElSub" style="font-size:11.5px;color:var(--muted);">Ametal · Kütle: 12.011 u</p>
+            </div>
+          </div>
+          <div class="telemetry-grid" style="margin-top:4px;">
+            <div class="tel-card"><small>Elektronegatiflik (EN)</small><b id="telAtomEN">2.55 (Pauling)</b></div>
+            <div class="tel-card"><small>Kovalent Yarıçap</small><b id="telAtomRadius">76 pm</b></div>
+          </div>
+        </div>
+
+        <div class="hud-section">
+          <div class="hud-title"><span>Radyal Dağılım Fonksiyonu 4πr²|R_nl(r)|²</span></div>
+          <canvas id="radialPlotCanvas" class="plot-canvas"></canvas>
+          <div class="telemetry-grid">
+            <div class="tel-card"><small>Radyal Düğüm (n−l−1)</small><b id="telRadNodes">0 Küresel Kabuk</b></div>
+            <div class="tel-card"><small>Açısal Düğüm (l)</small><b id="telAngNodes">1 Düzlem</b></div>
+            <div class="tel-card"><small>Toplam Düğüm (n−1)</small><b id="telTotalNodes">1 Toplam</b></div>
+            <div class="tel-card"><small>Durum Enerjisi E_n</small><b id="telEnergyN">-3.40 eV</b></div>
+          </div>
+        </div>
+
+        <div class="hud-section">
+          <div class="hud-title"><span>Aufbau, Pauli &amp; Hund Orbital Kutuları (↑↓)</span></div>
+          <div id="atomConfigText" style="font-family:var(--mono);font-size:11.5px;color:var(--cyan);">1s² 2s² 2p²</div>
+          <div id="hundBoxContainer" class="hund-container"></div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ALT SEKME 1.2: TARİHSEL ATOM MODELLERİ, ALFA TABANCASI & CANLI SPEKTROMETRE -->
+    <div id="mod1_sub_1_2" class="lab-grid two-col" hidden>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Tarihsel Atom Modeli Seçimi</span></div>
+          <div class="btn-grid">
+            <button class="mode-btn" data-hist-model="dalton">Dalton (1803)<br><small>Bilardo Topu</small></button>
+            <button class="mode-btn" data-hist-model="thomson">Thomson (1904)<br><small>Üzümlü Kek</small></button>
+            <button class="mode-btn active" data-hist-model="rutherford">Rutherford (1911)<br><small>Çekirdek &amp; Coulomb</small></button>
+            <button class="mode-btn" data-hist-model="bohr">Bohr (1913)<br><small>Kuantize Yörünge</small></button>
+            <button class="mode-btn" data-hist-model="debroglie">De Broglie (1924)<br><small>Duran Dalga (2πr=nλ)</small></button>
+            <button class="mode-btn" data-hist-model="schrodinger">Schrödinger (1926)<br><small>Olasılık Bulutu</small></button>
+          </div>
+        </div>
+
+        <div class="hud-section">
+          <div class="hud-title"><span>2. Deney Tabancası Seçimi</span></div>
+          <div class="btn-grid">
+            <button class="mode-btn active" data-gun-type="alpha">☢️ Alfa (α) Tabancası</button>
+            <button class="mode-btn" data-gun-type="photon">🔦 Foton (Lazer) Tabancası</button>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Foton Dalga Boyu (λ)</span><b id="histLambdaVal">656.3 nm</b></div>
+            <input id="histLambdaSlider" type="range" min="95" max="1900" step="1" value="656" />
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;">
+            <input id="histWhiteLightChk" type="checkbox" /> Beyaz Işık Gönder (Tüm Lyman/Balmer Tayfı)
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;">
+            <input id="histMultiNucChk" type="checkbox" /> Çoklu Altın Çekirdeği Izgarası (Au, Z=79)
+          </label>
+          <button id="fireHistGunBtn" class="action-btn amber">🚀 Parçacık / Foton Demeti Ateşle</button>
+        </div>
+      </aside>
+
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap">
+          <canvas id="histSimCanvas"></canvas>
+        </div>
+      </section>
+    </div>
+
+    <!-- ALT SEKME 1.3: NÜKLEER FİZİK, İZOTOP KARARLILIĞI VE U-235 FİSYON -->
+    <div id="mod1_sub_1_3" class="lab-grid" hidden>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Hızlı İzotop Seçimi</span></div>
+          <select id="nucPresetSelect" class="phys-select">
+            <option value="6_6">¹²C (Karbon-12 · Kararlı)</option>
+            <option value="6_8" selected>¹⁴C (Karbon-14 · β⁻ Radyokarbon, t₁/₂ = 5730 yıl)</option>
+            <option value="26_30">⁵⁶Fe (Demir-56 · Maksimum Bağlanma Enerjisi)</option>
+            <option value="27_33">⁶⁰Co (Kobalt-60 · β⁻ ve γ Kaynağı)</option>
+            <option value="88_138">²²⁶Ra (Radyum-226 · α Bozunumu)</option>
+            <option value="92_143">²³⁵U (Uranyum-235 · Termal Fisyon Yakıtı)</option>
+          </select>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Proton Sayısı (Z)</span><b id="nucZVal">6</b></div>
+            <input id="nucZSlider" type="range" min="1" max="95" value="6" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Nötron Sayısı (N)</span><b id="nucNVal">8</b></div>
+            <input id="nucNSlider" type="range" min="0" max="150" value="8" />
+          </div>
+        </div>
+
+        <div class="hud-section">
+          <div class="hud-title"><span>2. Uranyum-235 Fisyon Reaktörü</span></div>
+          <button id="toggleFissionModeBtn" class="mode-btn" style="padding:8px;font-weight:700;">
+            ⚛️ ²³⁵U Zincirleme Fisyon Reaktörüne Geç
+          </button>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Kadmiyum Kontrol Çubuğu Derinliği</span><b id="controlRodVal">%35</b></div>
+            <input id="controlRodSlider" type="range" min="0" max="100" value="35" />
+          </div>
+          <div class="btn-grid">
+            <button id="triggerDecayBtn" class="action-btn crimson">💥 Bozunum / Nötron Ateşle</button>
+            <button id="resetFissionBtn" class="mode-btn">🔄 Reaktörü Sıfırla</button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="stage-panel">
+        <div class="stage-overlay-top">
+          <span class="hud-pill">Aktif Nüklit: <b id="nucTitleBadge">Karbon-14 (¹⁴C)</b></span>
+        </div>
+        <div class="stage-canvas-wrap">
+          <canvas id="nuclearSimCanvas"></canvas>
+        </div>
+      </section>
+
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Kütle Kusuru (Δm) &amp; Bağlanma Enerjisi</span></div>
+          <div class="telemetry-grid">
+            <div class="tel-card"><small>Kütle Kusuru (Δm)</small><b id="telMassDefect">0.1124 u</b></div>
+            <div class="tel-card"><small>Toplam E_b = Δmc²</small><b id="telTotalEb">105.2 MeV</b></div>
+            <div class="tel-card"><small>Birim Bağlanma (E_b/A)</small><b id="telEbPerA">7.52 MeV</b></div>
+            <div class="tel-card"><small>Yarı Ömür (t₁/₂)</small><b id="telHalfLife">5730 yıl</b></div>
+          </div>
+          <div class="tel-card" style="margin-top:4px;">
+            <small>Bozunum Modu ve Kararlılık</small>
+            <b id="telDecayMode" style="color:#f59e0b;">β⁻ Bozunumu (→ ¹⁴N)</b>
+          </div>
+        </div>
+
+        <div class="hud-section">
+          <div class="hud-title"><span>Segrè Kararlılık Vadisi (N–Z Haritası)</span></div>
+          <canvas id="segrePlotCanvas" class="plot-canvas" style="height:185px;"></canvas>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ALT SEKME 1.4: STANDART MODEL VE HADRON (KUARK-GLUON) SENTEZLEYİCİ -->
+    <div id="mod1_sub_1_4" class="lab-grid" hidden>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Standart Model (17 Temel Parçacık)</span></div>
+          <div id="smGridContainer" class="sm-grid"></div>
+        </div>
+
+        <div class="hud-section">
+          <div class="hud-title"><span>2. Hadron (Baryon / Mezon) Sentezleyici</span></div>
+          <div class="btn-grid">
+            <button class="mode-btn active" data-hadron-mode="baryon">Baryon (3 Kuark: qqq)</button>
+            <button class="mode-btn" data-hadron-mode="meson">Mezon (Kuark+Antikuark)</button>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>1. Slot (Kırmızı QCD Renk Yükü)</span></div>
+            <select id="hadronQ1" class="phys-select">
+              <option value="u" selected>u (Yukarı Kuark, +2/3e)</option>
+              <option value="d">d (Aşağı Kuark, −1/3e)</option>
+              <option value="s">s (Garip Kuark, −1/3e)</option>
+            </select>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>2. Slot (Yeşil / Antirenk Yükü)</span></div>
+            <select id="hadronQ2" class="phys-select"></select>
+          </div>
+          <div id="hadronQ3Wrap" class="ctrl-row">
+            <div class="ctrl-label"><span>3. Slot (Mavi QCD Renk Yükü)</span></div>
+            <select id="hadronQ3" class="phys-select">
+              <option value="u">u (Yukarı Kuark, +2/3e)</option>
+              <option value="d" selected>d (Aşağı Kuark, −1/3e)</option>
+              <option value="s">s (Garip Kuark, −1/3e)</option>
+            </select>
+          </div>
+        </div>
+      </aside>
+
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap">
+          <canvas id="hadronSimCanvas"></canvas>
+        </div>
+      </section>
+
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Seçili Standart Model Parçacığı</span></div>
+          <h3 id="smDetailTitle" style="font-size:15px;color:var(--cyan);">Yukarı (Up) Kuark (u)</h3>
+          <small id="smDetailGroup" style="color:var(--muted);">Kuark (1. Nesil)</small>
+          <div class="telemetry-grid" style="margin-top:6px;">
+            <div class="tel-card"><small>Durgun Kütle</small><b id="smDetailMass">2,16 MeV/c²</b></div>
+            <div class="tel-card"><small>Elektrik Yükü</small><b id="smDetailCharge">+2/3 e</b></div>
+            <div class="tel-card"><small>Spin</small><b id="smDetailSpin">1/2</b></div>
+            <div class="tel-card"><small>Renk Yükü</small><b>Kırmızı/Yeşil/Mavi</b></div>
+          </div>
+          <p id="smDetailDesc" style="font-size:12px;color:var(--muted);margin-top:6px;"></p>
+        </div>
+
+        <div class="hud-section">
+          <div class="hud-title"><span>Sentezlenen Hadron &amp; Kütle Kökeni</span></div>
+          <h3 id="hadronResultTitle" style="font-size:15px;color:#fde047;">Proton (p⁺)</h3>
+          <small id="hadronResultMeta" style="font-family:var(--mono);color:var(--cyan);"></small>
+          <p id="hadronResultDesc" style="font-size:12px;color:var(--muted);margin-top:4px;"></p>
+          <div class="telemetry-grid" style="margin-top:6px;">
+            <div class="tel-card"><small>Higgs Kuark Kütlesi</small><b id="telHiggsMassPct" style="color:#ff3366;">%1.0 (9.0 MeV)</b></div>
+            <div class="tel-card"><small>QCD Gluon Enerjisi</small><b id="telGluonMassPct" style="color:#a855f7;">%99.0 (929.3 MeV)</b></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       MODÜL 2: "CANLI CAM" LABORATUVARI (4 İKONİK DENEY DÜZENEĞİ)
+       ======================================================================== -->
+  <section id="mod2" class="module-section">
+    <div class="subtab-bar">
+      <div class="subtab-group">
+        <button class="subtab-btn active" data-sub="2_1">☁️ 2.1. Wilson Bulut Odası</button>
+        <button class="subtab-btn" data-sub="2_2">🧪 2.2. J.J. Thomson Katot Işını Tüpü (e/m)</button>
+        <button class="subtab-btn" data-sub="2_3">💡 2.3. Einstein Fotoelektrik Etki Hücresi</button>
+        <button class="subtab-btn" data-sub="2_4">🔬 2.4. Millikan Yağ Damlası Mikroskop Vizörü</button>
+      </div>
+    </div>
+
+    <!-- 2.1: Wilson Bulut Odası -->
+    <div id="mod2_sub_2_1" class="lab-grid two-col">
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Radyoaktif Kaynak Seçimi</span></div>
+          <div class="btn-grid">
+            <button class="mode-btn active" data-cc-source="mixed">Karışık Kaynak<br><small>α + β± + Müon</small></button>
+            <button class="mode-btn" data-cc-source="alpha">²⁴¹Am Kaynağı<br><small>Alfa (Kalın İz)</small></button>
+            <button class="mode-btn" data-cc-source="beta">⁹⁰Sr / ²²Na<br><small>Beta e⁻ / Pozitron e⁺</small></button>
+            <button class="mode-btn" data-cc-source="muon">Kozmik Işınlar<br><small>Yüksek Enerjili μ⁻</small></button>
+          </div>
+        </div>
+        <div class="hud-section">
+          <div class="hud-title"><span>2. Dış Manyetik Alan (Lorentz Bükülmesi)</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Manyetik Alan B_z</span><b id="ccBVal">0.80 T</b></div>
+            <input id="ccBSlider" type="range" min="-2.0" max="2.0" step="0.05" value="0.8" />
+          </div>
+          <p style="font-size:11.5px;color:var(--muted);">
+            Manyetik alan açıldığında negatif elektronlar (β⁻) ve pozitif pozitronlar (β⁺) zıt yönlere spiral çizerek bükülür!
+          </p>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="ccCanvas"></canvas></div>
+      </section>
+    </div>
+
+    <!-- 2.2: J.J. Thomson Crookes Tüpü -->
+    <div id="mod2_sub_2_2" class="lab-grid" hidden>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Crookes Vakum Tüpü Kontrolleri</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Hızlandırıcı Anot Gerilimi (V)</span><b id="thVaccVal">2500 V</b></div>
+            <input id="thVaccSlider" type="range" min="1000" max="5000" step="100" value="2500" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Saptırma Elektrik Alanı (E)</span><b id="thEVal">18.0 kV/m</b></div>
+            <input id="thESlider" type="range" min="-45" max="45" step="0.5" value="18" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Helmholtz Manyetik Alanı (B)</span><b id="thBVal">0.65 mT</b></div>
+            <input id="thBSlider" type="range" min="-2.0" max="2.0" step="0.05" value="0.65" />
+          </div>
+          <button id="thWienBalanceBtn" class="action-btn">⚖️ Hız Seçici (Wien Dengesi: F_E = F_B) Kur</button>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="thomsonCanvas"></canvas></div>
+      </section>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>e/m Özgül Yük Telemetrisi</span></div>
+          <div class="telemetry-grid">
+            <div class="tel-card"><small>Elektron Hızı (v_x)</small><b id="telThVelocity">2.97 × 10⁷ m/s</b></div>
+            <div class="tel-card"><small>Ekran Sapması (Δy)</small><b id="telThDeflection">0.0 mm</b></div>
+            <div class="tel-card"><small>Wien Oranı (E/B)</small><b id="telThWien">2.77 × 10⁷ m/s</b></div>
+            <div class="tel-card"><small>Ölçülen e/m</small><b id="telThEM">1,759 × 10¹¹ C/kg</b></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- 2.3: Einstein Fotoelektrik Etki -->
+    <div id="mod2_sub_2_3" class="lab-grid" hidden>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Katot Metali (İş Fonksiyonu W)</span></div>
+          <select id="peMetalSelect" class="phys-select">
+            <option value="na" selected>Sodyum (Na · W = 2,28 eV · λ₀ = 544 nm)</option>
+            <option value="ca">Kalsiyum (Ca · W = 2,87 eV · λ₀ = 432 nm)</option>
+            <option value="zn">Çinko (Zn · W = 4,33 eV · λ₀ = 286 nm UV)</option>
+            <option value="cu">Bakır (Cu · W = 4,70 eV · λ₀ = 264 nm UV)</option>
+            <option value="pt">Platin (Pt · W = 6,35 eV · λ₀ = 195 nm UV)</option>
+          </select>
+        </div>
+        <div class="hud-section">
+          <div class="hud-title"><span>2. Işık Dalga Boyu, Şiddet &amp; Gerilim</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Işık Dalga Boyu (λ)</span><b id="peLambdaVal">400 nm</b></div>
+            <input id="peLambdaSlider" type="range" min="150" max="750" step="5" value="400" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Işık Şiddeti (Foton Akısı)</span><b id="peIntensityVal">%75</b></div>
+            <input id="peIntensitySlider" type="range" min="0" max="100" step="5" value="75" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Batarya Gerilimi (V)</span><b id="peVoltageVal">0.50 V</b></div>
+            <input id="peVoltageSlider" type="range" min="-5.0" max="5.0" step="0.05" value="0.5" />
+          </div>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="photoCanvas"></canvas></div>
+      </section>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Fotoelektrik Telemetri &amp; Planck Eğimi</span></div>
+          <div class="telemetry-grid">
+            <div class="tel-card"><small>Foton Enerjisi (hf)</small><b id="telPePhotonE">3.10 eV</b></div>
+            <div class="tel-card"><small>Eşik Enerjisi (W)</small><b id="telPeWorkFn">2.28 eV</b></div>
+            <div class="tel-card"><small>Maks. Kinetik (E_k)</small><b id="telPeEkMax">0.82 eV</b></div>
+            <div class="tel-card"><small>Fotosel Akımı (I)</small><b id="telPeCurrent">120.5 μA</b></div>
+          </div>
+          <canvas id="photoPlotCanvas" class="plot-canvas" style="margin-top:6px;"></canvas>
+        </div>
+      </aside>
+    </div>
+
+    <!-- 2.4: Millikan Yağ Damlası Mikroskop Vizörü -->
+    <div id="mod2_sub_2_4" class="lab-grid" hidden>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Millikan Kondansatör &amp; Püskürtücü</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Plaka Voltajı (V)</span><b id="mlVoltageVal">320 V</b></div>
+            <input id="mlVoltageSlider" type="range" min="50" max="900" step="1" value="320" />
+          </div>
+          <button id="mlAutoBalanceBtn" class="action-btn">🎯 Otomatik Askıda Dengele (F_e = F_g)</button>
+          <button id="mlNewDropBtn" class="mode-btn" style="padding:8px;">💧 Yeni Yağ Damlası Püskürt</button>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="millikanCanvas"></canvas></div>
+      </section>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Yük Kuantizasyonu (q = n·e)</span></div>
+          <div class="telemetry-grid">
+            <div class="tel-card"><small>Yerçekimi (F_g = mg)</small><b id="telMlFg">1.92 × 10⁻¹³ N</b></div>
+            <div class="tel-card"><small>Elektrik Kuvvet (qE)</small><b id="telMlFe">1.92 × 10⁻¹³ N</b></div>
+            <div class="tel-card"><small>Toplam Yük (q)</small><b id="telMlQ">4.806 × 10⁻¹⁹ C</b></div>
+            <div class="tel-card"><small>Temel Yük Katı</small><b id="telMlN">n = 3 elektron</b></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       MODÜL 3: KLASİK MEKANİK, DİNAMİK VE KAOS MOTORU (RK4 ÇÖZÜCÜ)
+       ======================================================================== -->
+  <section id="mod3" class="module-section">
+    <div class="subtab-bar">
+      <div class="subtab-group">
+        <button class="subtab-btn active" data-sub="3_1">📐 3.1. Serbest Cisim Diyagramı (FBD) &amp; Kinematik</button>
+        <button class="subtab-btn" data-sub="3_2">🦋 3.2. Kaos Teorisi (Çift Sarkaç, Kapitza &amp; 3-Cisim RK4)</button>
+      </div>
+    </div>
+
+    <!-- 3.1: Serbest Cisim Diyagramı -->
+    <div id="mod3_sub_3_1" class="lab-grid">
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Mekanik Sistem Seçimi</span></div>
+          <div class="btn-grid">
+            <button class="mode-btn active" data-fbd-scene="incline">Eğik Düzlem</button>
+            <button class="mode-btn" data-fbd-scene="atwood">Atwood Makarası</button>
+            <button class="mode-btn" data-fbd-scene="spring">Yaylı Osilatör</button>
+            <button class="mode-btn" data-fbd-scene="projectile">Balistik Eğik Atış</button>
+          </div>
+        </div>
+        <div class="hud-section">
+          <div class="hud-title"><span>2. Fiziksel Parametreler</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Eğim / Atış Açısı (θ)</span><b id="fbdAngleVal">28°</b></div>
+            <input id="fbdAngleSlider" type="range" min="5" max="65" value="28" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Kütle m₁</span><b id="fbdM1Val">4.0 kg</b></div>
+            <input id="fbdM1Slider" type="range" min="1" max="12" step="0.5" value="4" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Sürtünme / Sönüm (μ)</span><b id="fbdMuVal">0.18</b></div>
+            <input id="fbdMuSlider" type="range" min="0" max="0.8" step="0.02" value="0.18" />
+          </div>
+          <button id="fbdResetBtn" class="action-btn">🔄 Hareketi Yeniden Başlat</button>
+        </div>
+        <div class="hud-section">
+          <div class="hud-title"><span>3. Vektör Oklarını Göster/Gizle</span></div>
+          <label><input id="chkShowFg" type="checkbox" checked /> Yerçekimi (F_g = mg ve bileşenleri)</label>
+          <label><input id="chkShowN" type="checkbox" checked /> Normal Tepki (N) / İp Gerilmesi (T)</label>
+          <label><input id="chkShowFric" type="checkbox" checked /> Sürtünme Kuvveti (f_s, f_k)</label>
+          <label><input id="chkShowVel" type="checkbox" checked /> Hız Vektörü (v)</label>
+          <label><input id="chkShowAcc" type="checkbox" checked /> İvme Vektörü (a)</label>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="fbdCanvas"></canvas></div>
+      </section>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Dinamik Telemetri &amp; Osiloskop</span></div>
+          <div class="telemetry-grid">
+            <div class="tel-card"><small>Net Kuvvet (ΣF)</small><b id="telFbdNetF">12.4 N</b></div>
+            <div class="tel-card"><small>İvme (a)</small><b id="telFbdAccel">3.10 m/s²</b></div>
+            <div class="tel-card"><small>Anlık Hız (v)</small><b id="telFbdVel">4.20 m/s</b></div>
+            <div class="tel-card"><small>Normal / Gerilme</small><b id="telFbdNormal">34.6 N</b></div>
+          </div>
+          <canvas id="fbdPlotCanvas" class="plot-canvas" style="margin-top:6px;"></canvas>
+        </div>
+      </aside>
+    </div>
+
+    <!-- 3.2: Kaos Teorisi & RK4 Çözücü -->
+    <div id="mod3_sub_3_2" class="lab-grid" hidden>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Doğrusal Olmayan Sistem (RK4)</span></div>
+          <div class="btn-grid cols-3">
+            <button class="mode-btn active" data-chaos-sys="double">Çift Sarkaç</button>
+            <button class="mode-btn" data-chaos-sys="kapitza">Kapitza Ters</button>
+            <button class="mode-btn" data-chaos-sys="threebody">3-Cisim</button>
+          </div>
+        </div>
+        <div class="hud-section">
+          <div class="hud-title"><span>2. Başlangıç Açıları &amp; Kelebek Etkisi</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Üst Kol Açısı (θ₁)</span><b id="chaosTh1Val">135°</b></div>
+            <input id="chaosTh1Slider" type="range" min="15" max="178" value="135" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Alt Kol Açısı (θ₂)</span><b id="chaosTh2Val">115°</b></div>
+            <input id="chaosTh2Slider" type="range" min="15" max="178" value="115" />
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;">
+            <input id="chaosGhostChk" type="checkbox" checked /> 🦋 Hayalet Sarkaç (Δθ₀ = 0,001° Fark!)
+          </label>
+          <button id="chaosResetBtn" class="action-btn purple">🔄 Yörüngeleri Sıfırla ve Bırak</button>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="chaosCanvas"></canvas></div>
+      </section>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Faz Uzayı Portresi (θ vs ω)</span></div>
+          <div class="telemetry-grid">
+            <div class="tel-card"><small>Kelebek Farkı |Δθ|</small><b id="telChaosDiff">0.001°</b></div>
+            <div class="tel-card"><small>Açısal Hız ω₁</small><b id="telChaosOmega1">0.00 rad/s</b></div>
+            <div class="tel-card"><small>Açısal Hız ω₂</small><b id="telChaosOmega2">0.00 rad/s</b></div>
+            <div class="tel-card"><small>Çözücü Motor</small><b>RK4 (6 Alt Adım)</b></div>
+          </div>
+          <canvas id="chaosPhaseCanvas" class="plot-canvas" style="height:190px;margin-top:6px;"></canvas>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       MODÜL 4: ELEKTROMANYETİZMA VE MAXWELL ALAN LABORATUVARI
+       ======================================================================== -->
+  <section id="mod4" class="module-section">
+    <div class="subtab-bar">
+      <div class="subtab-group">
+        <button class="subtab-btn active" data-sub="4_1">⚡ 4.1. Elektrostatik Alan, Eşpotansiyel &amp; Lorentz Yörüngeleri</button>
+        <button class="subtab-btn" data-sub="4_2">🧲 4.2. Faraday Elektromanyetik İndüksiyon &amp; AC Jeneratör</button>
+      </div>
+    </div>
+
+    <!-- 4.1: Elektrostatik Kum Havuzu -->
+    <div id="mod4_sub_4_1" class="lab-grid two-col">
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Yük Yerleştirme &amp; Hazır Dizilimler</span></div>
+          <div class="btn-grid">
+            <button id="emAddPosBtn" class="action-btn crimson">+q Pozitif Yük Ekle</button>
+            <button id="emAddNegBtn" class="action-btn">−q Negatif Yük Ekle</button>
+          </div>
+          <div class="btn-grid cols-3" style="margin-top:4px;">
+            <button class="mode-btn active" data-em-preset="dipole">Dipol</button>
+            <button class="mode-btn" data-em-preset="quadrupole">Kuadrupol</button>
+            <button class="mode-btn" data-em-preset="capacitor">Kapasitör</button>
+          </div>
+        </div>
+        <div class="hud-section">
+          <div class="hud-title"><span>2. Lorentz Test Parçacığı Fırlatıcı</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Dış Manyetik Alan (B_z)</span><b id="emBzVal">0.45 T</b></div>
+            <input id="emBzSlider" type="range" min="-2.0" max="2.0" step="0.05" value="0.45" />
+          </div>
+          <button id="emLaunchBtn" class="action-btn amber">🚀 Yüklü Test Parçacığı Fırlat (F = qE + qv×B)</button>
+          <div class="telemetry-grid" style="margin-top:4px;">
+            <div class="tel-card"><small>Sahnedeki Yük</small><b id="telEmCount">2 Yük</b></div>
+            <div class="tel-card"><small>Manyetik Alan</small><b id="telEmBz">0.45 T</b></div>
+          </div>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="emFieldCanvas" title="Yükleri fareyle veya dokunmatikle sürükleyin"></canvas></div>
+      </section>
+    </div>
+
+    <!-- 4.2: Faraday İndüksiyonu -->
+    <div id="mod4_sub_4_2" class="lab-grid" hidden>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Solenoid Bobin &amp; Mıknatıs Kontrolleri</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Bobin Sarım Sayısı (N)</span><b id="faradayTurnsVal">6 Sarım</b></div>
+            <input id="faradayTurnsSlider" type="range" min="2" max="10" step="1" value="6" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>AC Jeneratör Frekansı</span><b id="faradayFreqVal">1.4 Hz</b></div>
+            <input id="faradayFreqSlider" type="range" min="0.4" max="3.5" step="0.1" value="1.4" />
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;">
+            <input id="faradayAutoChk" type="checkbox" checked /> ⚡ Otomatik AC Jeneratör Tahriki (Veya Mıknatısı Sürükleyin)
+          </label>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="faradayCanvas" title="Mıknatısı bobin içinden hızla sürükleyin"></canvas></div>
+      </section>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Faraday-Lenz Telemetrisi &amp; AC Osiloskop</span></div>
+          <div class="telemetry-grid">
+            <div class="tel-card"><small>Manyetik Akı (Φ_B)</small><b id="telFaradayFlux">45.0 mWb</b></div>
+            <div class="tel-card"><small>İndüksiyon EMK (ε)</small><b id="telFaradayEmf">3.20 V</b></div>
+            <div class="tel-card"><small>Lamba Gücü (P)</small><b id="telFaradayPower">4.60 W</b></div>
+            <div class="tel-card"><small>Yasa</small><b>ε = −N dΦ/dt</b></div>
+          </div>
+          <canvas id="faradayPlotCanvas" class="plot-canvas" style="margin-top:6px;"></canvas>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       MODÜL 5: GEOMETRİK OPTİK, ÇİFT YARIK DENEYİ & KUANTUM GİRİŞİM TEZGAHI
+       ======================================================================== -->
+  <section id="mod5" class="module-section">
+    <div class="subtab-bar">
+      <div class="subtab-group">
+        <button class="subtab-btn active" data-sub="5_1">🌈 5.1. Canlı Cam Mercekler, Fiber Optik &amp; Cauchy Prizması</button>
+        <button class="subtab-btn" data-sub="5_2">🌊 5.2. Kuantum Çift Yarık, Kuantum Silgi &amp; Aharonov-Bohm</button>
+        <button class="subtab-btn" data-sub="5_3">🧲 5.3. Stern-Gerlach Spin, Mach-Zehnder &amp; Gecikmeli Seçim</button>
+      </div>
+      <div class="subtab-meta">
+        <span>Referans: <code>Young (1801)</code> · <code>Tonomura Tek Elektron (1989)</code> · <code>Zeilinger C₆₀ (1999)</code> · <code>Stern-Gerlach (1922)</code></span>
+      </div>
+    </div>
+
+    <!-- 5.1: Astra AI Bending Light (Işığın Kırılması), Mercekler, Fiber & Prizma -->
+    <div id="mod5_sub_5_1" class="lab-grid two-col">
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Optik Tezgah &amp; Astra Lab Seçimi</span></div>
+          <button class="mode-btn active" data-opt-el="bending" style="width:100%;margin-bottom:4px;">🔦 Astra Lab: Işığın Kırılması (Bending Light: n₁ ↔ n₂)</button>
+          <div class="btn-grid">
+            <button class="mode-btn" data-opt-el="prism">Cauchy Prizma</button>
+            <button class="mode-btn" data-opt-el="convex">İnce Kenarlı Mercek</button>
+            <button class="mode-btn" data-opt-el="concave">Kalın Kenarlı Mercek</button>
+            <button class="mode-btn" data-opt-el="fiber">Fiber Optik Kablo</button>
+          </div>
+        </div>
+
+        <!-- Astra AI Bending Light İki Ortam (Üst n1 / Alt n2) Seçici -->
+        <div class="hud-section" id="optBendingMediaSection">
+          <div class="hud-title">
+            <span>2. Ortam Kırılma İndisleri (n₁ &amp; n₂)</span>
+            <button id="optSwapMediaBtn" class="qa-tool-btn" style="padding:2px 7px;font-size:10.5px;" title="Üst ve Alt ortamları yer değiştir (Tam İç Yansıma testi için)">⇅ Yer Değiştir</button>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Üst Ortam (Gelen Işın — n₁)</span><b id="optN1Val">n₁ = 1.000</b></div>
+            <select id="optMatTopSelect" class="phys-select">
+              <option value="1.000" selected>Vakum / Hava (n = 1.000)</option>
+              <option value="1.333">Su (n = 1.333)</option>
+              <option value="1.361">Etanol (n = 1.361)</option>
+              <option value="1.490">Akrilik / Pleksiglas (n = 1.490)</option>
+              <option value="1.520">Kuron Camı (n = 1.520)</option>
+              <option value="1.620">Flint Camı (n = 1.620)</option>
+              <option value="1.770">Safir (n = 1.770)</option>
+              <option value="2.417">Elmas (n = 2.417)</option>
+            </select>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Alt Ortam (Kırılan Işın — n₂)</span><b id="optN2Val">n₂ = 1.520</b></div>
+            <select id="optMatBotSelect" class="phys-select">
+              <option value="1.000">Vakum / Hava (n = 1.000)</option>
+              <option value="1.333">Su (n = 1.333)</option>
+              <option value="1.361">Etanol (n = 1.361)</option>
+              <option value="1.490">Akrilik / Pleksiglas (n = 1.490)</option>
+              <option value="1.520" selected>Kuron Camı (n = 1.520)</option>
+              <option value="1.620">Flint Camı (n = 1.620)</option>
+              <option value="1.770">Safir (n = 1.770)</option>
+              <option value="2.417">Elmas (n = 2.417)</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;margin-top:2px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:11.5px;flex:1;">
+              <input id="optProtractorChk" type="checkbox" checked /> 📐 360° İletki (Açıölçer)
+            </label>
+            <button id="optFireBurstBtn" class="action-btn amber" style="width:auto;padding:5px 10px;font-size:11px;">⚡ Işık Darbesi Ateşle</button>
+          </div>
+        </div>
+
+        <div class="hud-section">
+          <div class="hud-title"><span>3. Açı, İndis &amp; Cauchy Dispersiyonu</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Gelen Işın Açısı (θ₁ — Lazeri Sürükleyin)</span><b id="optAngleVal">42°</b></div>
+            <input id="optAngleSlider" type="range" min="-82" max="85" value="42" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Alt Ortam / Cam İndisi (n₂ = A)</span><b id="optIndexVal">1.52</b></div>
+            <input id="optIndexSlider" type="range" min="1.00" max="2.45" step="0.01" value="1.52" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Dispersiyon Katsayısı (B)</span><b id="optDispVal">0.014</b></div>
+            <input id="optDispSlider" type="range" min="0.002" max="0.035" step="0.001" value="0.014" />
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;">
+            <input id="optWhiteChk" type="checkbox" /> 🌈 Beyaz Işık Dispersiyonu (380 nm – 700 nm)
+          </label>
+          <div class="telemetry-grid" style="margin-top:4px;">
+            <div class="tel-card"><small>İndis Oranı (n₂/n₁)</small><b id="telOptIndex">1.52</b></div>
+            <div class="tel-card"><small>Kritik Açı (θ_c)</small><b id="telOptCrit">41.1°</b></div>
+            <div class="tel-card" style="grid-column:1/-1;"><small>Snell &amp; Fresnel Durumu</small><b id="telOptFocal">θ₂ = 25.9° · Kırılan %96 · Yansıyan %4</b></div>
+          </div>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="rayOpticsCanvas" title="Lazer kaynağını fareyle sürükleyerek gelme açısını (θ₁) değiştirebilirsiniz"></canvas></div>
+      </section>
+    </div>
+
+    <!-- 5.2: Kapsamlı Kuantum Çift Yarık, Kuantum Silgi & Aharonov-Bohm Deneyi -->
+    <div id="mod5_sub_5_2" class="lab-grid two-col" hidden>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Parçacık / Dalga Kaynağı Seçimi</span></div>
+          <select id="slitParticleSelect" class="phys-select">
+            <option value="electron">⚡ Elektron Demeti (e⁻ — Tonomura 1989)</option>
+            <option value="photon">💡 Tekil Lazer Fotonları (γ — Young Optiği)</option>
+            <option value="buckyball">⚽ Dev Molekül: Fulleren Buckyball (C₆₀ — 720 u)</option>
+            <option value="neutron">⚪ Soğuk Nötron Demeti (n⁰ — Madde Dalgası)</option>
+            <option value="classical">🎱 Klasik Mermi / Bilye Tabancası (P₁₂ = P₁ + P₂)</option>
+          </select>
+
+          <div class="hud-title" style="margin-top:4px;"><span>2. Görünüm &amp; Yarık Konfigürasyonu</span></div>
+          <div class="btn-grid">
+            <button class="mode-btn active" data-slit-mode="quantum">Tonomura Tek-Tek (Nokta)</button>
+            <button class="mode-btn" data-slit-mode="wave">2B Dalga Alanı (ψ₁+ψ₂)</button>
+            <button class="mode-btn" data-slit-mode="iso3d">3B Dalga &amp; Ekran Duvarı</button>
+            <button class="mode-btn" data-slit-mode="both">Hibrit (Dalga + Nokta)</button>
+          </div>
+
+          <div class="ctrl-row" style="margin-top:3px;">
+            <div class="ctrl-label"><span>Yarık Sayısı (N — Kırınım / Girişim)</span><b id="slitCountVal">N = 2 (Çift Yarık)</b></div>
+            <input id="slitCountSlider" type="range" min="1" max="5" step="1" value="2" />
+          </div>
+        </div>
+
+        <div class="hud-section">
+          <div class="hud-title"><span>3. Yarık Geometrisi &amp; Ateşleme Hızı</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Yarık Aralığı (d)</span><b id="slitDistVal">48 μm</b></div>
+            <input id="slitDistSlider" type="range" min="20" max="96" value="48" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Yarık Genişliği (a — Zarflama)</span><b id="slitWidthVal">12 μm</b></div>
+            <input id="slitWidthSlider" type="range" min="4" max="32" value="12" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>De Broglie / Optik Dalga Boyu (λ)</span><b id="slitLambdaVal">520 nm</b></div>
+            <input id="slitLambdaSlider" type="range" min="380" max="700" step="5" value="520" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Parçacık Akış Hızı (Atış / Kare)</span><b id="slitRateVal">8 parçacık</b></div>
+            <input id="slitRateSlider" type="range" min="1" max="35" step="1" value="8" />
+          </div>
+          <div class="btn-grid">
+            <button id="slitSingleShotBtn" class="action-btn amber" style="padding:7px;font-size:11.5px;">🎯 Tek Parçacık Ateşle</button>
+            <button id="slitClearBtn" class="mode-btn" style="padding:7px;">🧹 Ekranı Temizle</button>
+          </div>
+        </div>
+
+        <div class="hud-section">
+          <div class="hud-title"><span>4. Gözlemci Etkisi, Kuantum Silgi &amp; Aharonov-Bohm</span></div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fda4af;font-weight:600;">
+            <input id="slitDetectorChk" type="checkbox" /> 👁️ Hangi-Yol (Which-Way) Lazer Dedektörü (Çökert!)
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#34d399;font-weight:600;">
+            <input id="slitEraserChk" type="checkbox" /> 🔮 Kuantum Silgi (45° Polarizör ile Girişimi Geri Getir!)
+          </label>
+          <div class="ctrl-row" style="margin-top:3px;">
+            <div class="ctrl-label"><span>🧲 Aharonov-Bohm Solenoid Akısı (Φ_B / Φ₀)</span><b id="slitABFluxVal">0.00 Φ₀</b></div>
+            <input id="slitABFluxSlider" type="range" min="-1.00" max="1.00" step="0.05" value="0.00" />
+          </div>
+
+          <div class="telemetry-grid" style="margin-top:4px;">
+            <div class="tel-card"><small>Saçak Aralığı (Δy)</small><b id="telSlitFringe">13.0 mm</b></div>
+            <div class="tel-card"><small>Biriken Parçacık</small><b id="telSlitHits">0 e⁻</b></div>
+            <div class="tel-card"><small>Görünürlük (V)</small><b id="telSlitVisibility">V = %100 (Tam Uyum)</b></div>
+            <div class="tel-card"><small>AB Faz Kayması</small><b id="telSlitPhase">Δφ = 0.00 rad</b></div>
+            <div class="tel-card" style="grid-column:1/-1;"><small>Kuantum Durumu</small><b id="telSlitState">Süperpozisyon |ψ₁+ψ₂|²</b></div>
+          </div>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="doubleSlitCanvas"></canvas></div>
+      </section>
+    </div>
+
+    <!-- 5.3: Kardeş Kuantum Deneyleri (Stern-Gerlach Spin, Mach-Zehnder & Davisson-Germer) -->
+    <div id="mod5_sub_5_3" class="lab-grid two-col" hidden>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Temel Kuantum Deneyi Seçimi</span></div>
+          <div class="btn-grid">
+            <button class="mode-btn active" data-qexp-type="sterngerlach">🧲 Stern-Gerlach<br><small>Spin Kuantizasyonu</small></button>
+            <button class="mode-btn" data-qexp-type="machzehnder">🪞 Mach-Zehnder<br><small>Gecikmeli Seçim</small></button>
+          </div>
+          <button class="mode-btn" data-qexp-type="davisson" style="width:100%;">💎 Davisson-Germer Elektron Kristal Kırınımı (nλ = 2d sinθ)</button>
+        </div>
+
+        <div class="hud-section" id="qexpControlsSG">
+          <div class="hud-title"><span>2. Stern-Gerlach (1922) Kontrolleri</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Manyetik Alan Gradyanı (∂B_z / ∂z)</span><b id="sgGradVal">1.40 T/mm</b></div>
+            <input id="sgGradSlider" type="range" min="0.30" max="2.50" step="0.10" value="1.40" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Parçacık Türü</span></div>
+            <select id="sgParticleSelect" class="phys-select">
+              <option value="quantum">Kuantum Gümüş Atomu (Spin-1/2: m_s = ±1/2)</option>
+              <option value="classical">Klasik Dönen Mıknatıs (Sürekli Şerit Beklentisi!)</option>
+              <option value="sequential">Ardışık 3 Filtre: SG_z(+) → SG_x(+) → SG_z (±%50!)</option>
+            </select>
+          </div>
+          <button id="sgResetBtn" class="mode-btn" style="padding:7px;">🧹 Dedektör Levhasını Sıfırla</button>
+        </div>
+
+        <div class="hud-section" id="qexpControlsMZ" hidden>
+          <div class="hud-title"><span>2. Mach-Zehnder &amp; Wheeler Gecikmeli Seçim</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Üst Kol Faz Kaydırıcı (Δφ)</span><b id="mzPhaseVal">0.00 π</b></div>
+            <input id="mzPhaseSlider" type="range" min="0" max="2" step="0.05" value="0" />
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--cyan);font-weight:700;">
+            <input id="mzBS2Chk" type="checkbox" checked /> 🪞 2. Yarı-Geçirgen Aynayı (BS₂) Tak (Dalga Girişimi Modu)
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fda4af;">
+            <input id="mzSpyChk" type="checkbox" /> 👁️ Üst Kola Hangi-Yol Foton Dedektörü Koy
+          </label>
+          <button id="mzFirePhotonBtn" class="action-btn">💡 Tek Foton Paketi Gönder</button>
+        </div>
+
+        <div class="hud-section" id="qexpControlsDG" hidden>
+          <div class="hud-title"><span>2. Davisson-Germer (1927) Nikel Kristal Kırınımı</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Hızlandırıcı Voltaj (V_acc)</span><b id="dgVoltVal">54 V</b></div>
+            <input id="dgVoltSlider" type="range" min="20" max="150" step="1" value="54" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Kristal Düzlem Aralığı (d — Ni)</span><b id="dgSpacingVal">0.215 nm</b></div>
+            <input id="dgSpacingSlider" type="range" min="0.15" max="0.35" step="0.005" value="0.215" />
+          </div>
+        </div>
+
+        <div class="hud-section">
+          <div class="hud-title"><span>Kuantum Deney Telemetrisi</span></div>
+          <div class="telemetry-grid">
+            <div class="tel-card"><small>Deney Durumu</small><b id="telQexpMode">Stern-Gerlach</b></div>
+            <div class="tel-card"><small>Ölçüm Sonucu</small><b id="telQexpResult">2 Ayrık Spin Leke</b></div>
+            <div class="tel-card" style="grid-column:1/-1;"><small>Kuantum Yorumu</small><b id="telQexpDetail">Açısal momentum uzayda yalnızca +ℏ/2 ve −ℏ/2 değerlerini alır!</b></div>
+          </div>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="quantumExpCanvas"></canvas></div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       MODÜL 6: TERMODİNAMİK, İSTATİSTİKSEL FİZİK VE AKIŞKANLAR MEKANİĞİ
+       ======================================================================== -->
+  <section id="mod6" class="module-section">
+    <div class="subtab-bar">
+      <div class="subtab-group">
+        <button class="subtab-btn active" data-sub="6_1">🔥 6.1. Maxwell-Boltzmann İdeal Gaz Odası &amp; Maxwell’in Cini</button>
+        <button class="subtab-btn" data-sub="6_2">✈️ 6.2. Bernoulli Akışkanlar Tüneli &amp; Uçak Kanadı (Airfoil)</button>
+      </div>
+    </div>
+
+    <!-- 6.1: İdeal Gaz & Maxwell'in Cini -->
+    <div id="mod6_sub_6_1" class="lab-grid">
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>PV = Nk_BT &amp; Entropi Kontrolleri</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Mutlak Sıcaklık (T)</span><b id="gasTempVal">350 K</b></div>
+            <input id="gasTempSlider" type="range" min="100" max="1000" step="10" value="350" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Piston Hacmi (V)</span><b id="gasVolVal">%85</b></div>
+            <input id="gasVolSlider" type="range" min="40" max="100" step="2" value="85" />
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;">
+            <input id="gasDemonChk" type="checkbox" /> 😈 Maxwell’in Cini Kapısını Aç (Hızlıları Sağa, Yavaşları Sola Ayır!)
+          </label>
+          <button id="gasResetBtn" class="mode-btn" style="padding:8px;">🔄 Gaz Moleküllerini Karıştır</button>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="gasCanvas"></canvas></div>
+      </section>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Maxwell-Boltzmann Hız Dağılımı f(v)</span></div>
+          <div class="telemetry-grid">
+            <div class="tel-card"><small>Gaz Basıncı (P)</small><b id="telGasPressure">16.7 atm</b></div>
+            <div class="tel-card"><small>Etkin Hız (v_rms)</small><b id="telGasVrms">558 m/s</b></div>
+            <div class="tel-card" style="grid-column:1/-1;"><small>Oda Sıcaklık Farkı (Entropi)</small><b id="telGasDeltaT">0 K (Dengede)</b></div>
+          </div>
+          <canvas id="mbPlotCanvas" class="plot-canvas" style="height:185px;margin-top:6px;"></canvas>
+        </div>
+      </aside>
+    </div>
+
+    <!-- 6.2: Bernoulli Tüneli -->
+    <div id="mod6_sub_6_2" class="lab-grid two-col" hidden>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Akışkan Tüneli Modu</span></div>
+          <div class="btn-grid">
+            <button class="mode-btn active" data-fluid-mode="venturi">Venturi Borusu</button>
+            <button class="mode-btn" data-fluid-mode="airfoil">Uçak Kanadı (Airfoil)</button>
+          </div>
+        </div>
+        <div class="hud-section">
+          <div class="hud-title"><span>2. Akış Hızı, Kesit &amp; Hücum Açısı</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Giriş Akış Hızı (v₁)</span><b id="fluidSpeedVal">4.5 m/s</b></div>
+            <input id="fluidSpeedSlider" type="range" min="1.5" max="10.0" step="0.2" value="4.5" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Dar Boğaz Oranı (A₂/A₁)</span><b id="fluidThroatVal">0.48</b></div>
+            <input id="fluidThroatSlider" type="range" min="0.32" max="0.85" step="0.02" value="0.48" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Kanat Hücum Açısı (α)</span><b id="fluidAoAVal">8°</b></div>
+            <input id="fluidAoASlider" type="range" min="-4" max="18" step="1" value="8" />
+          </div>
+          <div class="telemetry-grid" style="margin-top:4px;">
+            <div class="tel-card"><small>Boğaz / Üst Hız</small><b id="telBernV2">9.38 m/s</b></div>
+            <div class="tel-card"><small>Basınç Farkı (ΔP)</small><b id="telBernDeltaP">−14.2 kPa</b></div>
+            <div class="tel-card" style="grid-column:1/-1;"><small>Kaldırma Kuvveti (F_lift)</small><b id="telBernLift">Venturi Modu</b></div>
+          </div>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="bernoulliCanvas"></canvas></div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       MODÜL 7: ÖZEL GÖRELİLİK VE KUANTUM DALGA MEKANİĞİ (TDSE)
+       ======================================================================== -->
+  <section id="mod7" class="module-section">
+    <div class="subtab-bar">
+      <div class="subtab-group">
+        <button class="subtab-btn active" data-sub="7_1">🚀 7.1. Einstein Özel Görelilik &amp; Foton Işık Saati</button>
+        <button class="subtab-btn" data-sub="7_2">🌊 7.2. Kuantum Tünelleme (1B Zaman-Bağımlı Schrödinger Çözücü)</button>
+      </div>
+    </div>
+
+    <!-- 7.1: Özel Görelilik -->
+    <div id="mod7_sub_7_1" class="lab-grid">
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Relativistik Hız (v/c) Kontrolü</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Araç Hızı (β = v/c)</span><b id="relBetaVal">0.866 c</b></div>
+            <input id="relBetaSlider" type="range" min="0.00" max="0.995" step="0.005" value="0.866" />
+          </div>
+          <button id="relResetClocksBtn" class="mode-btn" style="padding:8px;">⏱️ Kronometreleri Sıfırla</button>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="relativityCanvas"></canvas></div>
+      </section>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>Lorentz Faktörü (γ) &amp; Zaman Genişlemesi</span></div>
+          <div class="telemetry-grid">
+            <div class="tel-card"><small>Lorentz Faktörü</small><b id="telRelGamma">γ = 2.000</b></div>
+            <div class="tel-card"><small>Gözlenen Boy (L)</small><b id="telRelLength">%50.0 L₀</b></div>
+            <div class="tel-card"><small>Dünya Saati (Δt)</small><b id="telRelTimeEarth">0.0 s</b></div>
+            <div class="tel-card"><small>Araç Saati (Δt₀)</small><b id="telRelTimeShip">0.0 s</b></div>
+            <div class="tel-card" style="grid-column:1/-1;"><small>Relativistik Doppler (λ)</small><b id="telRelDoppler">360 nm / 750 nm</b></div>
+          </div>
+          <canvas id="lorentzPlotCanvas" class="plot-canvas" style="margin-top:6px;"></canvas>
+        </div>
+      </aside>
+    </div>
+
+    <!-- 7.2: Kuantum Tünelleme (1B TDSE) -->
+    <div id="mod7_sub_7_2" class="lab-grid two-col" hidden>
+      <aside class="hud-panel">
+        <div class="hud-section">
+          <div class="hud-title"><span>1. Potansiyel Enerji Bariyer Tipi</span></div>
+          <div class="btn-grid cols-3">
+            <button class="mode-btn active" data-barrier-type="single">Tek Bariyer</button>
+            <button class="mode-btn" data-barrier-type="double">Çift Rezonans</button>
+            <button class="mode-btn" data-barrier-type="step">Basamak V₀</button>
+          </div>
+        </div>
+        <div class="hud-section">
+          <div class="hud-title"><span>2. Bariyer Yüksekliği (V₀) &amp; Genişliği</span></div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Bariyer Yüksekliği (V₀ / E)</span><b id="tdseV0Val">1.22 × E</b></div>
+            <input id="tdseV0Slider" type="range" min="0.40" max="2.20" step="0.05" value="1.22" />
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label"><span>Bariyer Kalınlığı (a)</span><b id="tdseWidthVal">18 birim</b></div>
+            <input id="tdseWidthSlider" type="range" min="6" max="42" step="2" value="18" />
+          </div>
+          <button id="tdseFireBtn" class="action-btn">🌊 Gauss Elektron Dalga Paketini Ateşle</button>
+          <div class="telemetry-grid" style="margin-top:4px;">
+            <div class="tel-card"><small>Tünelleme (İletim T)</small><b id="telTdseT" style="color:#10b981;">%18.4</b></div>
+            <div class="tel-card"><small>Yansıma Olasılığı (R)</small><b id="telTdseR" style="color:#f59e0b;">%81.6</b></div>
+            <div class="tel-card" style="grid-column:1/-1;"><small>Bariyer Rejimi</small><b id="telTdseRatio">V₀ = 1.22 E (Klasik Yasak Bölge!)</b></div>
+          </div>
+        </div>
+      </aside>
+      <section class="stage-panel">
+        <div class="stage-canvas-wrap"><canvas id="tdseCanvas"></canvas></div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       PERİYODİK TABLO 118 ELEMENT SEÇİCİ MODAL
+       ======================================================================== -->
+  <div id="ptableModalBackdrop" class="ptable-modal-backdrop" hidden>
+    <div class="ptable-modal">
+      <div class="ptable-modal-head">
+        <div>
+          <h3 style="font-size:16px;font-weight:800;">118 Element Periyodik Tablo Seçici</h3>
+          <p style="font-size:12px;color:var(--muted);">Bir elemente tıklayarak 3B kuantum orbitalini, çekirdek yapısını ve Hund dizilimini yükleyin.</p>
+        </div>
+        <button id="closePtableModalBtn" class="icon-btn">✕ Kapat</button>
+      </div>
+      <div id="ptableModalGrid" class="ptable-grid-mini"></div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       SCIENCEWIKI "AKADEMİK BİLGİ & TEORİ" 4 SEKMELİ BİLGİ ÇEKMECESİ
+       ======================================================================== -->
+  <div id="theoryDrawerBackdrop" class="theory-drawer-backdrop" hidden>
+    <aside class="theory-drawer" aria-label="Akademik Bilgi ve Teori Çekmecesi">
+      <div class="theory-head">
+        <div>
+          <span style="font-size:11px;font-family:var(--mono);color:var(--cyan);">scienceWiki AKADEMİK STANDARDI</span>
+          <h2 id="theoryDrawerTitle" style="font-size:17px;font-weight:800;margin-top:2px;">3B Kuantum Atom ve Katmanlar</h2>
+        </div>
+        <button id="closeTheoryDrawerBtn" class="icon-btn">✕ Kapat</button>
+      </div>
+
+      <div class="theory-tabs">
+        <button class="theory-tab-btn active" data-ttab="intuitive">1. Sezgisel Mantık</button>
+        <button class="theory-tab-btn" data-ttab="history">2. Keşif Tarihi</button>
+        <button class="theory-tab-btn" data-ttab="formulas">3. Formüller (KaTeX)</button>
+        <button class="theory-tab-btn" data-ttab="tasks">4. Bunu Dene!</button>
+      </div>
+
+      <div id="theoryDrawerBody" class="theory-body"></div>
+    </aside>
+  </div>
+
+  <!-- ========================================================================
+       QUANTUM-ATOM MODALLERİ (ELEMENT KARŞILAŞTIR, REHBERLİ DERSLER, BAĞ ANALİZİ, GEÇMİŞ)
+       ======================================================================== -->
+  <!-- 1. İki Elementi Yan Yana Karşılaştırma Modalı -->
+  <div id="qaCompareModalBackdrop" class="qa-modal-backdrop" hidden>
+    <div class="qa-modal">
+      <div class="ptable-modal-head">
+        <div>
+          <h3 style="font-size:16px;font-weight:800;">🆚 İki Elementi Yan Yana Karşılaştır (Quantum-Atom)</h3>
+          <p style="font-size:12px;color:var(--muted);">Atom yarıçapı, Pauling elektronegatifliği, iyonlaşma enerjisi, kabuk dizilimi ve 3B yörünge ölçeği karşılaştırması.</p>
+        </div>
+        <button id="qaCloseCompareModalBtn" class="icon-btn">✕ Kapat</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <label style="font-size:11px;color:var(--muted);">1. Element:</label>
+          <select id="qaCompareEl1" class="phys-select"></select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);">2. Element:</label>
+          <select id="qaCompareEl2" class="phys-select"></select>
+        </div>
+      </div>
+      <div id="qaCompareTableWrap" style="overflow-x:auto;"></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button id="qaCompareRender3DBtn" class="action-btn" style="width:auto;padding:7px 14px;">🔬 İki Elementi 3B Sahnede Yan Yana Göster</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Rehberli Etkileşimli Dersler (Guided Lesson Paths) Modalı -->
+  <div id="qaLessonModalBackdrop" class="qa-modal-backdrop" hidden>
+    <div class="qa-modal">
+      <div class="ptable-modal-head">
+        <div>
+          <h3 style="font-size:16px;font-weight:800;">🎓 Quantum-Atom Rehberli Etkileşimli Ders Rotaları</h3>
+          <p style="font-size:12px;color:var(--muted);">Bir ders seçin; 3B sahne her adımda ilgili atomu, molekülü, çekirdek pion ağını veya çift yarık deneyini otomatik kurar.</p>
+        </div>
+        <button id="qaCloseLessonModalBtn" class="icon-btn">✕ Kapat</button>
+      </div>
+      <div id="qaLessonListContainer" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;"></div>
+    </div>
+  </div>
+
+  <!-- 3. Molekül & Kimyasal Bağ Analizi Modalı -->
+  <div id="qaAnalysisModalBackdrop" class="qa-modal-backdrop" hidden>
+    <div class="qa-modal">
+      <div class="ptable-modal-head">
+        <div>
+          <h3 style="font-size:16px;font-weight:800;">📐 Kuantum Molekül, VSEPR &amp; Pauling-Fajans Bağ Analizi</h3>
+          <p style="font-size:12px;color:var(--muted);">Bağ uzunlukları (pm), VSEPR geometrisi, bağ açıları, Pauling ΔEN iyonik/kovalent karakter ve oktet/formal yük denetimi.</p>
+        </div>
+        <button id="qaCloseAnalysisModalBtn" class="icon-btn">✕ Kapat</button>
+      </div>
+      <div id="qaAnalysisBody"></div>
+    </div>
+  </div>
+
+  <!-- 4. Son İncelenenler (Recents) Modalı -->
+  <div id="qaRecentsModalBackdrop" class="qa-modal-backdrop" hidden>
+    <div class="qa-modal" style="width:min(520px,94vw);">
+      <div class="ptable-modal-head">
+        <div>
+          <h3 style="font-size:16px;font-weight:800;">🕘 Son İncelenen Atom ve Moleküller</h3>
+          <p style="font-size:12px;color:var(--muted);">Tek tıkla önceki kuantum sahnenize geri dönün.</p>
+        </div>
+        <button id="qaCloseRecentsModalBtn" class="icon-btn">✕ Kapat</button>
+      </div>
+      <div id="qaRecentsList" class="qa-chip-wrap" style="gap:8px;"></div>
+    </div>
+  </div>
+
+  <!-- Quantum-Atom Bildirim Toast -->
+  <div id="qaToast" class="qa-toast" hidden>QUANTUM-ATOM MODU AKTİF</div>
+
+  <!-- Kütüphaneler ve Modüler affePhysics Motoru -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/physics-core.js"></script>
+  <script src="js/mod1-atom.js"></script>
+  <script src="js/mod2-glasslab.js"></script>
+  <script src="js/mod3-mechanics.js"></script>
+  <script src="js/mod4-electromag.js"></script>
+  <script src="js/mod5-optics.js"></script>
+  <script src="js/mod6-thermo.js"></script>
+  <script src="js/mod7-modern.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
